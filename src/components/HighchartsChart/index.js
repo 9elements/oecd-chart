@@ -31,6 +31,7 @@ import { errorMessages } from '../../constants/chartErrorMessages';
 import customizeHighcharts from '../../highchartsCustomCode/customizeHighcharts';
 import useMemoForArrayOrObject from '../../hook/useMemoForArrayOrObject';
 import { deepMergeUserOptionsWithDefaultOptions } from '../../utils/chartOptions/deepMergeUserOptionsWithDefaultOptions';
+import { exampleAnnotations } from '../../utils/chartOptions/exampleAnnotations';
 import { getCreateOptionsFuncForChartType } from '../../utils/chartOptions/getCreateOptionsFuncForChartType';
 import {
   createFooter,
@@ -183,6 +184,8 @@ const HighchartsChart = ({
   calcAvgValue = null,
   referenceValueCode = null,
   dataLastUpdateDate = null,
+  // TODO: for testing only
+  annotations = exampleAnnotations,
 }) => {
   const ChartForType = getChartForType(chartType);
 
@@ -1141,6 +1144,7 @@ const HighchartsChart = ({
         inlineLabels,
         disableLegendInteraction,
         sortOrder,
+        annotations,
       });
 
       setMergedOptions(
@@ -1418,6 +1422,7 @@ HighchartsChart.propTypes = {
   calcAvgValue: PropTypes.bool,
   referenceValueCode: PropTypes.string,
   dataLastUpdateDate: PropTypes.string,
+  annotations: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default memo(HighchartsChart);
