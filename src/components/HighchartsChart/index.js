@@ -1062,9 +1062,19 @@ const HighchartsChart = ({
     useMemoForArrayOrObject(mapColorValueSteps);
   const optionsOverrideInternal = useMemoForArrayOrObject(optionsOverride);
 
+  // Filter annotations for those categories actually in the data
+  const applicableAnnotations = useMemo(() => {
+    if (!parsedData) return [];
+    const categoryCodes = new Set(R.map(R.prop('code'), parsedData.categories));
+    return R.filter(
+      (annotation) => categoryCodes.has(annotation.fromCategoryCode),
+      annotations,
+    );
+  }, [parsedData, annotations]);
+
   const annotationsForFooter = useMemo(
-    () => (annotations ? createAnnotationFooter(annotations) : ''),
-    [annotations],
+    () => createAnnotationFooter(applicableAnnotations),
+    [applicableAnnotations],
   );
 
   // create merged chart options (default + optionsOverride)
@@ -1151,7 +1161,7 @@ const HighchartsChart = ({
         inlineLabels,
         disableLegendInteraction,
         sortOrder,
-        annotations,
+        annotations: applicableAnnotations,
       });
 
       setMergedOptions(
@@ -1164,7 +1174,7 @@ const HighchartsChart = ({
       setMergedOptions(null);
     }
   }, [
-    annotations,
+    applicableAnnotations,
     annotationsForFooter,
     baseline,
     chartHeight,
