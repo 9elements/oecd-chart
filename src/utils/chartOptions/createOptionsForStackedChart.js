@@ -18,7 +18,11 @@ import {
   calcYAxisCoordinatesForBarAndStacked,
   fontStyleForTextElement,
 } from '../stylingUtil';
-import { createAnnotationPlotBands } from './createAnnotationPlotBands';
+import {
+  createAnnotationPlotBands,
+  referenceGap,
+  referenceOuterSize,
+} from './createAnnotationPlotBands';
 import { createDatapoint } from './createDataPoint';
 import { legendLabelFormatter } from './legendLabelFormatter';
 import { parseCategories } from './parseCategories';
@@ -341,6 +345,15 @@ export const createOptionsForStackedChart = ({
     chartSize,
   );
 
+  const plotBands = positionedAnnotations
+    ? createAnnotationPlotBands({
+        positionedAnnotations,
+        chartSize,
+        showLabelsInline: showAnnotationLabelsInline,
+        position: horizontal ? 'right' : 'top',
+      })
+    : null;
+
   const marginTop = (() => {
     /** @type {number | undefined} */
     let marginTop;
@@ -358,14 +371,13 @@ export const createOptionsForStackedChart = ({
     return marginTop;
   })();
 
-  const plotBands = positionedAnnotations
-    ? createAnnotationPlotBands({
-        positionedAnnotations,
-        chartSize,
-        showLabelsInline: showAnnotationLabelsInline,
-        position: horizontal ? 'right' : 'top',
-      })
-    : null;
+  const marginRight =
+    horizontal &&
+    plotBands &&
+    plotBands.length > 0 &&
+    !showAnnotationLabelsInline
+      ? referenceOuterSize + referenceGap
+      : 0;
 
   return {
     custom: customChartOptions,
@@ -373,6 +385,7 @@ export const createOptionsForStackedChart = ({
     chart: {
       type: highChartsChartType,
       marginTop,
+      marginRight,
       height,
       animation: false,
       spacing: isFullScreen ? chartSpacingFullScreenAndExport : chartSpacing,

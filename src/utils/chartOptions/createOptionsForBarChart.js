@@ -18,7 +18,11 @@ import {
   calcYAxisCoordinatesForBarAndStacked,
   fontStyleForTextElement,
 } from '../stylingUtil';
-import { createAnnotationPlotBands } from './createAnnotationPlotBands';
+import {
+  createAnnotationPlotBands,
+  referenceGap,
+  referenceOuterSize,
+} from './createAnnotationPlotBands';
 import { legendLabelFormatter } from './legendLabelFormatter';
 import { parseCategories } from './parseCategories';
 import { xAxisLabelFormatter } from './xAxisLabelFormatter';
@@ -136,6 +140,15 @@ export const createOptionsForBarChart = ({
     chartSize,
   );
 
+  const plotBands = positionedAnnotations
+    ? createAnnotationPlotBands({
+        positionedAnnotations,
+        chartSize,
+        showLabelsInline: showAnnotationLabelsInline,
+        position: horizontal ? 'right' : 'top',
+      })
+    : null;
+
   const marginTop = (() => {
     /** @type {number | undefined} */
     let marginTop;
@@ -153,14 +166,13 @@ export const createOptionsForBarChart = ({
     return marginTop;
   })();
 
-  const plotBands = positionedAnnotations
-    ? createAnnotationPlotBands({
-        positionedAnnotations,
-        chartSize,
-        showLabelsInline: showAnnotationLabelsInline,
-        position: horizontal ? 'right' : 'top',
-      })
-    : null;
+  const marginRight =
+    horizontal &&
+    plotBands &&
+    plotBands.length > 0 &&
+    !showAnnotationLabelsInline
+      ? referenceOuterSize + referenceGap
+      : 0;
 
   return {
     custom: customChartOptions,
@@ -168,6 +180,7 @@ export const createOptionsForBarChart = ({
     chart: {
       type: horizontal ? 'bar' : 'column',
       marginTop,
+      marginRight,
       height,
       animation: false,
       spacing: isFullScreen ? chartSpacingFullScreenAndExport : chartSpacing,
