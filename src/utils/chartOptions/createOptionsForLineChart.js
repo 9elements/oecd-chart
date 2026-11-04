@@ -300,7 +300,7 @@ export const createOptionsForLineChart = ({
       verticalAlign: 'top',
       margin:
         calcLegendMarginDefault(chartSize) +
-        (showAnnotationLabelsInline ? 10 : 0),
+        (showAnnotationLabelsInline ? 15 : 0),
     }),
   )();
 
