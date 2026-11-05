@@ -22,7 +22,6 @@ import {
   calcRadarPaneSize,
   fontStyleForTextElement,
 } from '../stylingUtil';
-import { createAnnotationPlotBands } from './createAnnotationPlotBands';
 import { highlightSymbols } from './highlightSymbols';
 import { legendLabelFormatter } from './legendLabelFormatter';
 import { parseCategories } from './parseCategories';
@@ -107,7 +106,6 @@ export const createOptionsForRadarChart = ({
   seriesFrequency,
   disableLegendInteraction = false,
   chartSize,
-  positionedAnnotations,
 }) => {
   const anySeriesHighlighted = highlightSeriesCodes.length > 0;
 
@@ -211,7 +209,7 @@ export const createOptionsForRadarChart = ({
     };
   }, data.series);
 
-  const highlightPlotBands = getHighlightPlotBands({
+  const plotBands = getHighlightPlotBands({
     categories: data.categories,
     baselineCodes,
     highlightCodes,
@@ -230,17 +228,6 @@ export const createOptionsForRadarChart = ({
     categoriesFrequency,
   );
   const xAxisCategories = R.map(R.prop('parsedLabel'), parsedCategories);
-
-  const annotationPlotBands = positionedAnnotations
-    ? createAnnotationPlotBands({
-        positionedAnnotations,
-        chartSize,
-        showLabelsInline: false,
-        position: 'top',
-      })
-    : [];
-
-  const plotBands = R.concat(highlightPlotBands, annotationPlotBands);
 
   return {
     chart: {
@@ -268,7 +255,7 @@ export const createOptionsForRadarChart = ({
     },
 
     xAxis: {
-      plotBands,
+      plotBands: plotBands,
       categories: xAxisCategories,
       labels: {
         style: fontStyleForTextElement(textElementTypes.legend, chartSize),
