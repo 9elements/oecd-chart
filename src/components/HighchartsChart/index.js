@@ -1079,9 +1079,12 @@ const HighchartsChart = ({
             (annotation) =>
               categoryCodeToIndex.get(annotation.fromCategoryCode),
       ),
-      // Make sure both categories appear in the data
+      // Make sure the categories appear in the data so that the annotations in the footer
+      // are those that actually appear in the chart.
       R.filter(
         (annotation) =>
+          // TODO: Problem: this does not work for continuous data, i.e. dates and numbers-
+          // It would filter out annotations that could be displayed in the chart.
           categoryCodeToIndex.has(annotation.fromCategoryCode) &&
           categoryCodeToIndex.has(annotation.toCategoryCode),
       ),
