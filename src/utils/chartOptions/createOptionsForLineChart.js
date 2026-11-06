@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-check-no
 import { TinyColor } from '@ctrl/tinycolor';
 import * as R from 'ramda';
 import {
@@ -65,12 +65,13 @@ export const createOptionsForLineChart = ({
   disableLegendInteraction = false,
   hideLineSymbols = false,
   chartSize,
-  positionedAnnotations,
+  positionedBandAnnotations,
+  positionedPointAnnotations
 }) => {
   const anySeriesHighlighted = highlightSeriesCodes.length > 0;
 
-  const showAnnotationLabelsInline = positionedAnnotations
-    ? R.any(R.prop('showLabelInline'), positionedAnnotations)
+  const showAnnotationLabelsInline = positionedBandAnnotations
+    ? R.any(R.prop('showLabelInline'), positionedBandAnnotations)
     : false;
 
   const allSeries = mapWithIndex((series, seriesIndex) => {
@@ -335,9 +336,9 @@ export const createOptionsForLineChart = ({
     ? null
     : R.map(R.prop('parsedLabel'), parsedCategories);
 
-  const plotBands = positionedAnnotations
+  const plotBands = positionedBandAnnotations
     ? createAnnotationPlotBands({
-        positionedAnnotations,
+        positionedAnnotations: positionedBandAnnotations,
         chartSize,
         showLabelsInline: showAnnotationLabelsInline,
       })
@@ -361,6 +362,8 @@ export const createOptionsForLineChart = ({
   })();
 
   return {
+    annotations: positionedPointAnnotations,
+
     custom: customChartOptions,
 
     chart: {

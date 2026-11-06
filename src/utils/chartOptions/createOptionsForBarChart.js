@@ -24,7 +24,7 @@ import { parseCategories } from './parseCategories';
 import { xAxisLabelFormatter } from './xAxisLabelFormatter';
 
 /**
- * @param {import("./getBaselineAndHighlightCodes").BaselineAndHighlightCodes} options
+ * @p aram {import("./getBaselineAndHighlightCodes").BaselineAndHighlightCodes} options
  */
 export const createOptionsForBarChart = ({
   chartType,
@@ -52,12 +52,13 @@ export const createOptionsForBarChart = ({
   seriesFrequency,
   disableLegendInteraction = false,
   chartSize,
-  positionedAnnotations,
+  positionedBandAnnotations,
+  positionedPointAnnotations
 }) => {
   const horizontal = chartType === chartTypes.row;
 
-  const showAnnotationLabelsInline = positionedAnnotations
-    ? R.any(R.prop('showLabelInline'), positionedAnnotations)
+  const showAnnotationLabelsInline = positionedBandAnnotations
+    ? R.any(R.prop('showLabelInline'), positionedBandAnnotations)
     : false;
 
   const calcXAxisLayout = () => {
@@ -129,9 +130,9 @@ export const createOptionsForBarChart = ({
     ? null
     : R.map(R.prop('parsedLabel'), parsedCategories);
 
-  const plotBands = positionedAnnotations
+  const plotBands = positionedBandAnnotations
     ? createAnnotationPlotBands({
-        positionedAnnotations,
+        positionedAnnotations: positionedBandAnnotations,
         chartSize,
         showLabelsInline: showAnnotationLabelsInline,
       })
@@ -160,6 +161,8 @@ export const createOptionsForBarChart = ({
   })();
 
   return {
+    annotations: positionedPointAnnotations,
+
     custom: customChartOptions,
 
     chart: {
@@ -300,6 +303,8 @@ export const createOptionsForBarChart = ({
       };
 
       return {
+        annotiations: positionedPointAnnotations,
+
         custom: customSeriesOptions,
         name: data.areSeriesDates
           ? seriesFrequency.tryParse(series.label).getTime()

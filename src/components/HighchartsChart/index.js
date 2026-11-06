@@ -1062,9 +1062,38 @@ const HighchartsChart = ({
     useMemoForArrayOrObject(mapColorValueSteps);
   const optionsOverrideInternal = useMemoForArrayOrObject(optionsOverride);
 
+  // Sorting categories by index in data -> xValue
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const indexForCategoryCode = new Map(
+    parsedData.categories.map((category, index) => [category.code, index]),
+  );
+
+  const sortedAnnotations = useMemo(
+    () =>
+      R.sortBy(({ categoryCode, fromCategoryCode }) => {
+        let code = categoryCode ?? fromCategoryCode;
+        let index = indexForCategoryCode.get(code);
+        return index;
+        console.log('foo', code, index);
+      }, annotations),
+    [parsedData, annotations],
+  );
+
+  const referencedSortedAnnotations = useMemo(() => {
+    return sortedAnnotations.map((annotation, index) => {
+      return {
+        ...annotation,
+        referenceSymbol: alphabet[index % alphabet.length]
+      };
+    });
+  }, sortedAnnotations);
+
   const annotationsForFooter = useMemo(
-    () => (annotations ? createAnnotationFooter(annotations) : ''),
-    [annotations],
+    () =>
+      referencedSortedAnnotations
+        ? createAnnotationFooter(referencedSortedAnnotations)
+        : '',
+    referencedSortedAnnotations,
   );
 
   // create merged chart options (default + optionsOverride)
@@ -1160,7 +1189,7 @@ const HighchartsChart = ({
         inlineLabels,
         disableLegendInteraction,
         sortOrder,
-        annotations,
+        referencedSortedAnnotations,
       });
 
       setMergedOptions(
@@ -1173,7 +1202,7 @@ const HighchartsChart = ({
       setMergedOptions(null);
     }
   }, [
-    annotations,
+    referencedSortedAnnotations,
     annotationsForFooter,
     baseline,
     chartHeight,

@@ -18,14 +18,14 @@ const NO_ANNOTATIONS = Object.freeze([]);
  * Plot bands are defined with time stamps.
  *
  * @param {{
- * annotations: import('./annotation').Annotation[];
+ * annotations: import('./annotation').BandAnnotation[];
  * series: Series[];
  * categoriesFrequency: {
  *   tryParse: (str: string) => Date | false;
  *   getMiddle: (date: Date, step: number) => Date;
  * };
  * }} options
- * @returns {import('./annotation').PositionedAnnotation[]}
+ * @returns {import('./annotation').PositionedBandAnnotation[] | NO_ANNOTATIONS}
  */
 const getTimeBandAnnotations = ({
   annotations,
@@ -77,7 +77,7 @@ const getTimeBandAnnotations = ({
  * annotations: import('./annotation').BandAnnotation[];
  * categories: { code: string }[];
  * }} options
- * @returns {import('./annotation').PositionedAnnotation[]}
+ * @returns {import('./annotation').PositionedBandAnnotation[] | NO_ANNOTATIONS}
  */
 const getDiscreteBandAnnotations = ({ annotations, categories }) =>
   annotations
@@ -117,7 +117,7 @@ const getDiscreteBandAnnotations = ({ annotations, categories }) =>
  *   getMiddle: (date: Date, step: number) => Date;
  * } | null;
  * }} options
- * @returns {import('./annotation').PositionedAnnotation[]}
+ * @returns {import('./annotation').PositionedBandAnnotation[] | NO_ANNOTATIONS}
  */
 export const createPositionedBandAnnotations = ({
   annotations,

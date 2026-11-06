@@ -39,6 +39,7 @@ import { createPositionedBandAnnotations } from './createPositionedBandAnnotatio
 import { exampleAnnotations } from './exampleAnnotations';
 import { getBaselineAndHighlightCodes } from './getBaselineAndHighlightCodes';
 import { getSmallerPalette } from './getSmallerPalette';
+import { createPositionedPointAnnotations } from './createPositionedPointAnnotations';
 
 const mapsUtil = import('../mapsUtil');
 
@@ -79,7 +80,7 @@ const createChartOptionsFunc =
     chartSize,
     inlineLabels,
     hideLegend,
-    annotations = exampleAnnotations,
+    referencedSortedAnnotations, //  = exampleAnnotations,
     ...otherProps
   }) => {
     const parsedFixedColorIndexBySeries = isNilOrEmpty(fixedColorIndexBySeries)
@@ -176,14 +177,30 @@ const createChartOptionsFunc =
       ? R.prop(data.seriesDateFomat, frequencies)
       : null;
 
-    const positionedAnnotations = annotations
+    const groupedAnnotations = R.groupBy(
+      (annotation) => annotation.type,
+      referencedSortedAnnotations,
+    );
+
+    const bandAnnotations = groupedAnnotations['band'];
+    const pointAnnotations = groupedAnnotations['point'];
+
+    const positionedBandAnnotations = bandAnnotations
       ? createPositionedBandAnnotations({
-          annotations,
+          annotations: bandAnnotations,
           series: data.series,
           categories: data.categories,
           areCategoriesDates: data.areCategoriesDates,
           categoriesFrequency,
         })
+      : null;
+
+    const positionedPointAnnotations = pointAnnotations
+      ? createPositionedPointAnnotations(
+          pointAnnotations,
+          data,
+          categoriesFrequency,
+        )
       : null;
 
     const options = createOptionsFuncForChartType({
@@ -209,7 +226,8 @@ const createChartOptionsFunc =
       chartSize,
       inlineLabels,
       hideLegend,
-      positionedAnnotations,
+      positionedBandAnnotations,
+      positionedPointAnnotations,
     });
 
     const customChartRender = R.propOr(

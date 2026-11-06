@@ -97,7 +97,7 @@ background-color: white;
  * Returns Highcharts plot bands for the given annotations.
  *
  * @param {{
- * positionedAnnotations: import('./annotation').PositionedAnnotation[];
+ * positionedAnnotations: import('./annotation').PositionedBandAnnotation[];
  * chartSize: keyof typeof import('../../constants/chart').chartSizes;
  * showLabelsInline: boolean;
  * }} options
@@ -123,7 +123,7 @@ export const createAnnotationPlotBands = ({
         ? // Inline annotation
           getInlineLabelOptions(label, fontSizePxInline, fontSizeNumberInline)
         : // Referenced annotation
-          getReferenceLabelOptions(String(++referenceIndex));
+          getReferenceLabelOptions(String(annotation.referenceSymbol));
 
     /** @type {import('highcharts').XAxisPlotBandsOptions} */
     const plotBand = {

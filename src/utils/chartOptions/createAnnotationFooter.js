@@ -14,7 +14,14 @@ export const createAnnotationFooter = (annotations) =>
     R.join('\n'),
     mapWithIndex(
       (annotation, index) =>
-        `<p><span style="box-sizing: content-box; display: inline-block; width: 16px; height: 16px; border: 1px solid ${fontColors.normal}; border-radius: 50%; font-size: 12px; line-height: 16px; text-align: center">${index + 1}</span> ${annotation.label}</p>`,
+        `<p><span style="box-sizing: content-box; display: inline-block;
+                         width: 16px; height: 16px;
+                         border: 1px solid ${annotation.type=='point' ? 'black' : fontColors.normal};
+                         border-radius: 50%; font-size: 12px; line-height: 16px;
+                         text-align: center;
+                         color: ${annotation.type=='point' ? 'white' : fontColors.normal};
+                         background-color: ${annotation.type=='point' ? 'black' : 'inherit'};"
+                         >${annotation.referenceSymbol}</span> ${annotation.label}</p>`,
     ),
     R.filter((annotation) => !annotation.showLabelInline),
   )(annotations);
