@@ -26,6 +26,7 @@ import {
 import { legendLabelFormatter } from './legendLabelFormatter';
 import { parseCategories } from './parseCategories';
 import { xAxisLabelFormatter } from './xAxisLabelFormatter';
+import { createAnnotationPoints } from './createAnnotationPoints';
 
 /**
  * @param {import("./getBaselineAndHighlightCodes").BaselineAndHighlightCodes} options
@@ -149,6 +150,10 @@ export const createOptionsForBarChart = ({
         position: horizontal ? 'right' : 'top',
       })
     : null;
+  
+  const annotationPoints = positionedPointAnnotations
+    ? createAnnotationPoints(positionedPointAnnotations)
+    : null;
 
   const marginTop = (() => {
     /** @type {number | undefined} */
@@ -176,7 +181,9 @@ export const createOptionsForBarChart = ({
       : 0;
 
   return {
-    annotations: positionedPointAnnotations,
+    annotations: [{
+      labels: annotationPoints,
+    }],
 
     custom: customChartOptions,
 

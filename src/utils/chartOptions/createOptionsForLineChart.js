@@ -31,6 +31,7 @@ import { highlightSymbols } from './highlightSymbols';
 import { legendLabelFormatter } from './legendLabelFormatter';
 import { parseCategories } from './parseCategories';
 import { xAxisLabelFormatter } from './xAxisLabelFormatter';
+import { createAnnotationPoints } from './createAnnotationPoints';
 
 const SYMBOL_RADIUS = 3;
 const HIGHLIGHTED_SYMBOL_RADIUS = 3.5;
@@ -345,6 +346,12 @@ export const createOptionsForLineChart = ({
       })
     : null;
 
+  const annotationPoints = positionedPointAnnotations
+    ? createAnnotationPoints(positionedPointAnnotations)
+    : null;
+  console.log('annotationPoints', annotationPoints);
+  
+
   const labelStyle = fontStyleForTextElement(
     textElementTypes.legend,
     chartSize,
@@ -363,7 +370,10 @@ export const createOptionsForLineChart = ({
   })();
 
   return {
-    annotations: positionedPointAnnotations,
+    annotations: [{
+      draggable: '', 
+      labels: annotationPoints,
+    }],
 
     custom: customChartOptions,
 
