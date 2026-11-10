@@ -26,6 +26,7 @@ import {
   fontStyleForTextElement,
 } from '../stylingUtil';
 import { createAnnotationPlotBands } from './createAnnotationPlotBands';
+import { createAnnotationPoints } from './createAnnotationPoints';
 import { createDatapoint } from './createDataPoint';
 import { highlightSymbols } from './highlightSymbols';
 import { legendLabelFormatter } from './legendLabelFormatter';
@@ -345,6 +346,10 @@ export const createOptionsForLineChart = ({
       })
     : null;
 
+  const annotationPoints = positionedPointAnnotations
+    ? createAnnotationPoints(positionedPointAnnotations)
+    : null;
+
   const labelStyle = fontStyleForTextElement(
     textElementTypes.legend,
     chartSize,
@@ -363,7 +368,12 @@ export const createOptionsForLineChart = ({
   })();
 
   return {
-    annotations: positionedPointAnnotations,
+    annotations: [
+      {
+        draggable: '',
+        labels: annotationPoints,
+      },
+    ],
 
     custom: customChartOptions,
 

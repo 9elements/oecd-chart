@@ -23,6 +23,7 @@ import {
   referenceGap,
   referenceOuterSize,
 } from './createAnnotationPlotBands';
+import { createAnnotationPoints } from './createAnnotationPoints';
 import { legendLabelFormatter } from './legendLabelFormatter';
 import { parseCategories } from './parseCategories';
 import { xAxisLabelFormatter } from './xAxisLabelFormatter';
@@ -150,6 +151,10 @@ export const createOptionsForBarChart = ({
       })
     : null;
 
+  const annotationPoints = positionedPointAnnotations
+    ? createAnnotationPoints(positionedPointAnnotations)
+    : null;
+
   const marginTop = (() => {
     /** @type {number | undefined} */
     let marginTop;
@@ -176,7 +181,12 @@ export const createOptionsForBarChart = ({
       : 0;
 
   return {
-    annotations: positionedPointAnnotations,
+    annotations: [
+      {
+        draggable: '',
+        labels: annotationPoints,
+      },
+    ],
 
     custom: customChartOptions,
 

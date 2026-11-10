@@ -6,7 +6,10 @@ import { createPositionedPointAnnotations } from './createPositionedPointAnnotat
 /**
  * @param {{
  * data: {
- *   series: unknown[];
+ *   series: {
+ *     code: string;
+ *     data: { value: string }[]
+ *   }[];
  *   categories: { code: string }[];
  *   areCategoriesDates: boolean;
  * };
@@ -15,6 +18,7 @@ import { createPositionedPointAnnotations } from './createPositionedPointAnnotat
  *   tryParse: (str: string) => Date | false;
  *   getMiddle: (date: Date, step: number) => Date;
  * } | null;
+ * chartType: import('../../constants/chart').chartTypes;
  * }} options
  * @return {{
  * positionedBandAnnotations: import('./annotation').PositionedBandAnnotation[] | null;
@@ -25,14 +29,23 @@ export const createPositionedAnnotations = ({
   data,
   annotations,
   categoriesFrequency,
+  chartType,
 }) => {
-  if (data.series.length === 0)
+  if (data.series.length === 0) {
     return {
       positionedBandAnnotations: [],
       positionedPointAnnotations: [],
     };
+  }
 
-  const groupedAnnotations = R.groupBy(R.prop('type'), annotations);
+  // Add an index so that the numbering of the reference symbols
+  // is equal in plot and footer.
+  const indexedAnnotations = annotations.map((annotation, index) => ({
+    ...annotation,
+    index,
+  }));
+
+  const groupedAnnotations = R.groupBy(R.prop('type'), indexedAnnotations);
   const { band, point } = groupedAnnotations;
 
   const positionedBandAnnotations = band
@@ -45,12 +58,13 @@ export const createPositionedAnnotations = ({
     : null;
 
   const positionedPointAnnotations = point
-    ? createPositionedPointAnnotations(
-        point,
+    ? createPositionedPointAnnotations({
+        annotations: point,
         data,
         categoriesFrequency,
-        data.areCategoriesDates,
-      )
+        areCategoriesDates: data.areCategoriesDates,
+        chartType,
+      })
     : null;
 
   return { positionedBandAnnotations, positionedPointAnnotations };

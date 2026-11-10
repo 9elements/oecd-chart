@@ -180,7 +180,12 @@ const createChartOptionsFunc =
       : null;
 
     const { positionedBandAnnotations, positionedPointAnnotations } =
-      createPositionedAnnotations({ data, annotations, categoriesFrequency });
+      createPositionedAnnotations({
+        data,
+        annotations,
+        categoriesFrequency,
+        chartType,
+      });
 
     const options = createOptionsFuncForChartType({
       ...otherProps,

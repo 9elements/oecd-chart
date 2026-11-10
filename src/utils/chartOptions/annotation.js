@@ -30,6 +30,7 @@
  * @typedef {BandAnnotation & {
  * from: number;
  * to: number;
+ * index: number;
  * }} PositionedBandAnnotation
  */
 
@@ -37,6 +38,7 @@
  * @typedef {PointAnnotation & {
  * x: number;
  * y: number;
+ * index: number;
  * }} PositionedPointAnnotation
  */
 

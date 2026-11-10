@@ -7,6 +7,7 @@ import {
   textElementTypes,
 } from '../../constants/styling';
 import { getReferenceLetter } from './getReferenceLetter';
+import { referenceCssStyles } from './referenceSymbolStyles';
 
 /** Default band fill color */
 const BAND_COLOR = '#F0F4F8';
@@ -79,25 +80,13 @@ pointer-events: none;
  * @returns {import('highcharts').XAxisPlotBandsLabelOptions}
  */
 const getReferenceLabelOptions = (index, position) => {
-  // Fixed font and circle size
-  const style = `
-box-sizing: content-box;
-display: block;
-width: ${referenceDiameterPx};
-height: ${referenceDiameterPx};
-border: ${referenceBorder}px solid ${fontColors.normal};
-border-radius: 50%;
-background-color: white;
-text-align: center;
-pointer-events: none;
-`;
   // Uppercase Latin alphabet
   const referenceLetter = getReferenceLetter(index);
   const isRight = position === 'right';
   return {
     align: isRight ? 'right' : 'center',
     useHTML: true,
-    text: `<span style="${style}">${escapeHTML(referenceLetter)}</span>`,
+    text: `<span style="${referenceCssStyles()}">${escapeHTML(referenceLetter)}</span>`,
     x: isRight ? referenceOuterSize + referenceGap : undefined,
     y: isRight ? 3 : -(referenceOuterSize / 2),
     style: {
@@ -132,7 +121,6 @@ export const createAnnotationPlotBands = ({
     fontStyleByTextElementTypes[textElementTypes.source].fontSize[chartSize];
   const fontSizeNumberInline = parseFloat(fontSizePxInline);
 
-  let referenceIndex = 0;
   return positionedAnnotations.map((annotation) => {
     const { label, showLabelInline, from, to, color } = annotation;
 
@@ -141,7 +129,7 @@ export const createAnnotationPlotBands = ({
         ? // Inline annotation
           getInlineLabelOptions(label, fontSizePxInline, fontSizeNumberInline)
         : // Reference annotation in footer
-          getReferenceLabelOptions(referenceIndex++, position);
+          getReferenceLabelOptions(annotation.index, position);
 
     /** @type {import('highcharts').XAxisPlotBandsOptions} */
     const plotBand = {

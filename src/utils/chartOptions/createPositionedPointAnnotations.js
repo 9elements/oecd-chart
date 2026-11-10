@@ -1,25 +1,12 @@
+// @ts-check
 import * as R from 'ramda';
-import { getReferenceLetter } from './getReferenceLetter';
+import { chartTypes } from '../../constants/chart';
 
-const diameter = 16;
-const diameterPx = `${diameter}px`;
-const fontColors = {
-  dark: '#101D40',
-  normal: '#586179',
-};
-
-const style = `
-display: block;
-width: ${diameterPx};
-height: ${diameterPx};
-// border: 1px solid ${fontColors.normal};
-border-radius: 50%;
-background-color: black;
-text-align: center;
-color: white;
-transform: translateY(10px);
-`;
-
+/**
+ * @template T
+ * @param {T[][]} lists
+ * @returns {T[][]}
+ */
 const zip = (lists) => {
   const length = Math.min(...lists.map((list) => list.length));
   let result = [];
@@ -29,67 +16,67 @@ const zip = (lists) => {
   return result;
 };
 
-export const createPositionedPointAnnotations = (
+/**
+ * @param {{
+ * annotations: (import('./annotation').PointAnnotation & { index: number })[];
+ * data: {
+ *   series: {
+ *     code: string;
+ *     data: { value: number }[]
+ *   }[];
+ *   categories: { code: string }[];
+ * };
+ * categoriesFrequency: {
+ *   tryParse: (str: string) => Date | false;
+ * } | null;
+ * areCategoriesDates: boolean;
+ * chartType: import('../../constants/chart').chartTypes;
+ * }} options
+ * @returns {import('./annotation').PositionedPointAnnotation[]}
+ */
+export const createPositionedPointAnnotations = ({
   annotations,
   data,
   categoriesFrequency,
   areCategoriesDates,
-) => {
-  let allSeries = R.pluck('data', data.series);
-  let zippedSeries = zip(allSeries);
-  let maxValuePerIndex = zippedSeries.map((tuple) =>
+  chartType,
+}) => {
+  const points = R.pluck('data', data.series);
+  const zippedPoints = zip(points);
+  const maxValuePerIndex = zippedPoints.map((tuple) =>
     Math.max(...R.pluck('value', tuple)),
   );
 
   const positionedAnnotations = annotations
-    .map((annotation, index) => {
+    .map((annotation) => {
       const categoryIndex = data.categories.findIndex(
         (category) => category.code === annotation.categoryCode,
       );
-      if (!categoryIndex === -1) return;
+      if (categoryIndex === -1) return;
 
       const seriesForAnnotation = data.series.find(
         (series) => series.code == annotation.seriesCode,
       );
       if (!seriesForAnnotation) return;
 
-      // let yValue = seriesForAnnotation.data[categoryIndex].value;
-      let yValue = maxValuePerIndex[categoryIndex];
+      const yValue =
+        chartType === chartTypes.bar
+          ? maxValuePerIndex[categoryIndex]
+          : seriesForAnnotation.data[categoryIndex].value;
 
-      let category = data.categories[categoryIndex];
-      let timestamp = areCategoriesDates
-        ? categoriesFrequency.tryParse(category.code)
-        : null;
+      const category = data.categories[categoryIndex];
+      const timestamp =
+        areCategoriesDates && categoriesFrequency
+          ? categoriesFrequency.tryParse(category.code)
+          : null;
       if (areCategoriesDates && !timestamp) return;
 
-      let xValue = areCategoriesDates ? timestamp : categoryIndex;
+      const xValue =
+        areCategoriesDates && timestamp ? timestamp.getTime() : categoryIndex;
 
-      const referenceLetter = getReferenceLetter(index);
-
-      return {
-        ...annotation,
-        useHTML: true,
-        shape: 'rect',
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        borderColor: 'black',
-        padding: 0,
-        distance: 0,
-
-        point: {
-          x: xValue,
-          y: yValue,
-          xAxis: 0,
-          yAxis: 0,
-        },
-        text: `<span style="${style}">${referenceLetter}</span>`,
-      };
+      return { ...annotation, x: xValue, y: yValue };
     })
     .filter(R.isNotNil);
 
-  return [
-    {
-      labels: positionedAnnotations,
-    },
-  ];
+  return positionedAnnotations;
 };
