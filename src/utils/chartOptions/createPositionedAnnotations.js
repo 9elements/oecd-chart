@@ -18,7 +18,7 @@ import { createPositionedPointAnnotations } from './createPositionedPointAnnotat
  *   tryParse: (str: string) => Date | false;
  *   getMiddle: (date: Date, step: number) => Date;
  * } | null;
- * chartType: import('../../constants/chart').chartTypes;
+ * chartType: 'Line' | 'Bar';
  * }} options
  * @return {{
  * positionedBandAnnotations: import('./annotation').PositionedBandAnnotation[] | null;

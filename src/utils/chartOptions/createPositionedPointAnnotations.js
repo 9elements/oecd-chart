@@ -30,7 +30,7 @@ const zip = (lists) => {
  *   tryParse: (str: string) => Date | false;
  * } | null;
  * areCategoriesDates: boolean;
- * chartType: import('../../constants/chart').chartTypes;
+ * chartType: 'Line' | 'Bar';
  * }} options
  * @returns {import('./annotation').PositionedPointAnnotation[]}
  */
