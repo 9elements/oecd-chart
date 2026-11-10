@@ -1081,11 +1081,20 @@ const HighchartsChart = ({
       annotations,
     );
   }, [parsedData, annotations]);
-  console.log('sortedApplicableAnnotations', sortedApplicableAnnotations);
+  // console.log('sortedApplicableAnnotations', sortedApplicableAnnotations);
+
+  // Create a common index for all annotations, so that the numbering of the
+  // reference symbols is equal in plot and footer.
+  const indexedAnnotations = useMemo(() => sortedApplicableAnnotations.map((annotation, index) => {
+    return {
+      ...annotation,
+      index
+    }
+    }), [sortedApplicableAnnotations]);
 
   const annotationsForFooter = useMemo(
-    () => createAnnotationFooter(sortedApplicableAnnotations),
-    [sortedApplicableAnnotations],
+    () => createAnnotationFooter(indexedAnnotations),
+    [indexedAnnotations],
   );
 
   const annotationsShouldBeDisplayedInTooltip =
@@ -1175,7 +1184,7 @@ const HighchartsChart = ({
         inlineLabels,
         disableLegendInteraction,
         sortOrder,
-        annotations: sortedApplicableAnnotations,
+        annotations: indexedAnnotations,
       });
 
       setMergedOptions(
@@ -1188,7 +1197,7 @@ const HighchartsChart = ({
       setMergedOptions(null);
     }
   }, [
-    sortedApplicableAnnotations,
+    indexedAnnotations,
     annotationsForFooter,
     baseline,
     chartHeight,

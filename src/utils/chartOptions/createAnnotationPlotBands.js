@@ -140,7 +140,7 @@ export const createAnnotationPlotBands = ({
         ? // Inline annotation
           getInlineLabelOptions(label, fontSizePxInline, fontSizeNumberInline)
         : // Reference annotation in footer
-          getReferenceLabelOptions(referenceIndex++, position);
+          getReferenceLabelOptions(annotation.index, position);
 
     /** @type {import('highcharts').XAxisPlotBandsOptions} */
     const plotBand = {
