@@ -8,7 +8,7 @@ import { referenceCssStyles } from './referenceSymbolStyles';
  */
 export const createAnnotationPoints = (positionedPointAnnotations) => {
   return positionedPointAnnotations.map((annotation) => {
-    const referenceLetter = getReferenceLetter(annotation.index);
+    const referenceLetter = getReferenceLetter(annotation.referenceIndex);
     /** @type {import('highcharts').AnnotationsLabelsOptions} */
     const highchartsAnnotation = {
       useHTML: true,

@@ -27,18 +27,28 @@
  */
 
 /**
- * @typedef {BandAnnotation & {
+ * @typedef {{ referenceIndex: number }} ReferenceIndex
+ */
+
+/**
+ * @typedef {BandAnnotation & ReferenceIndex} IndexedBandAnnotation
+ */
+
+/**
+ * @typedef {PointAnnotation & ReferenceIndex} IndexedPointAnnotation
+ */
+
+/**
+ * @typedef {IndexedBandAnnotation & {
  * from: number;
  * to: number;
- * index: number;
  * }} PositionedBandAnnotation
  */
 
 /**
- * @typedef {PointAnnotation & {
+ * @typedef {IndexedPointAnnotation & {
  * x: number;
  * y: number;
- * index: number;
  * }} PositionedPointAnnotation
  */
 

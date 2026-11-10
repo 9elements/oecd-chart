@@ -18,7 +18,7 @@ const zip = (lists) => {
 
 /**
  * @param {{
- * annotations: (import('./annotation').PointAnnotation & { index: number })[];
+ * annotations: import('./annotation').IndexedPointAnnotation[];
  * data: {
  *   series: {
  *     code: string;
