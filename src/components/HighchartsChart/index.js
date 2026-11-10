@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable react-hooks/static-components */
 import Highcharts from 'highcharts/es-modules/masters/highcharts.src';
 import PropTypes from 'prop-types';
@@ -939,10 +938,25 @@ const HighchartsChart = ({
     setAllHeightCalculationsHaveBeenDone,
   ] = useState(false);
 
+  // Filter annotations for those categories actually in the data
+  const sortedApplicableAnnotations = useMemo(
+    () => filterAndSortAnnotations(parsedData, annotations),
+    [parsedData, annotations],
+  );
+
+  const annotationsForFooter = useMemo(() => {
+    return createAnnotationFooter(sortedApplicableAnnotations);
+  }, [sortedApplicableAnnotations]);
+
+  const annotationsShouldBeDisplayedInTooltip =
+    annotationsForFooter && (footerHeight === 0 || displayAnnotationsAsTooltip);
+
   // height calculations
   useEffect(() => {
     const isThereEnoughSpaceForFooter =
-      displayNoteAsTooltip && displaySourceAsTooltip
+      displayNoteAsTooltip &&
+      displaySourceAsTooltip &&
+      displayAnnotationsAsTooltip
         ? false
         : height - footerRef.current.clientHeight >=
           minChartHeightForFooterDisplay;
@@ -967,10 +981,12 @@ const HighchartsChart = ({
     height,
     parsedTitle,
     parsedSubtitle,
+    annotationsForFooter,
     note,
     source,
     displayNoteAsTooltip,
     displaySourceAsTooltip,
+    displayAnnotationsAsTooltip,
   ]);
 
   const chartCanBedisplayed =
@@ -1064,20 +1080,6 @@ const HighchartsChart = ({
   const mapColorValueStepsInternal =
     useMemoForArrayOrObject(mapColorValueSteps);
   const optionsOverrideInternal = useMemoForArrayOrObject(optionsOverride);
-
-  // Filter annotations for those categories actually in the data
-  const sortedApplicableAnnotations = useMemo(
-    () => filterAndSortAnnotations(parsedData, annotations),
-    [parsedData, annotations],
-  );
-
-  const annotationsForFooter = useMemo(
-    () => createAnnotationFooter(sortedApplicableAnnotations),
-    [sortedApplicableAnnotations],
-  );
-
-  const annotationsShouldBeDisplayedInTooltip =
-    annotationsForFooter && (footerHeight === 0 || displayAnnotationsAsTooltip);
 
   // create merged chart options (default + optionsOverride)
   // this must be done a minimum amount of time because it causes Highcharts chart rerender which is costly
