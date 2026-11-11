@@ -61,7 +61,6 @@ export const createPositionedPointAnnotations = ({
   
   const positionedAnnotations = annotations
     .map((annotation) => {
-        console.log(annotation)
       const categoryIndex = data.categories.findIndex(
         (category) => category.code === annotation.categoryCode,
       );
