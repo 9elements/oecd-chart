@@ -11,21 +11,18 @@ export const exampleAnnotations = [
     seriesCode: 'France',
     categoryCode: 'Bananas',
     label: 'France / Bananas',
-    showLabelInline: false,
   },
   {
     type: 'point',
     seriesCode: 'Italy',
     categoryCode: 'Mango',
     label: 'Italy / Mango',
-    showLabelInline: false,
   },
   {
     type: 'point',
     seriesCode: 'Germany',
     categoryCode: 'Avocado',
     label: 'Germany / Avocado',
-    showLabelInline: false,
   },
 
   // // Categorical categories
