@@ -3,18 +3,26 @@ import * as R from 'ramda';
 import { chartTypes } from '../../constants/chart';
 
 /**
- * @template T
- * @param {T[][]} lists
- * @returns {T[][]}
+ * @param {{
+ *  category: string;
+ *  value: number | null;
+ * }[][]} lists
+ * @returns {Map<string, number>}
  */
-const zip = (lists) => {
-  const length = Math.min(...lists.map((list) => list.length));
-  let result = [];
-  for (let i = 0; i < length; i++) {
-    result.push(lists.map((list) => list[i]));
+const maximaPerCategory = (lists) => {
+  /** @type Map<string, number> */
+  const maxima = new Map();
+  for (const list of lists) {
+    for (const { category, value } of list) {
+      const current = maxima.get(category)
+      if (value !== null && (current === undefined || value > current)) {
+        maxima.set(category, value);
+      }
+    } 
   }
-  return result;
+  return maxima;
 };
+
 
 /**
  * @param {{
@@ -41,18 +49,25 @@ export const createPositionedPointAnnotations = ({
   areCategoriesDates,
   chartType,
 }) => {
-  const points = R.pluck('data', data.series);
-  const zippedPoints = zip(points);
-  const maxValuePerIndex = zippedPoints.map((tuple) =>
-    Math.max(...R.pluck('value', tuple)),
+  const listOfSeries = R.pluck('data', data.series);
+  
+  /** @type {{category: string; value: number | null}[][]} */
+  const listOfSeriesWithCategories = R.map(
+    (series) => R.zipWith((category, point) => { return { category: category.code, value: point.value, } }, data.categories, series),
+    listOfSeries
   );
 
+  const maxima = maximaPerCategory(listOfSeriesWithCategories);
+  
   const positionedAnnotations = annotations
     .map((annotation) => {
+        console.log(annotation)
       const categoryIndex = data.categories.findIndex(
         (category) => category.code === annotation.categoryCode,
       );
-      if (categoryIndex === -1) return;
+      if (categoryIndex === -1) {
+        return
+      };
 
       const seriesForAnnotation = data.series.find(
         (series) => series.code == annotation.seriesCode,
@@ -61,7 +76,7 @@ export const createPositionedPointAnnotations = ({
 
       const yValue =
         chartType === chartTypes.bar
-          ? maxValuePerIndex[categoryIndex]
+          ? (maxima.get(annotation.categoryCode) ?? 0)
           : seriesForAnnotation.data[categoryIndex].value;
 
       const category = data.categories[categoryIndex];
