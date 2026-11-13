@@ -42,18 +42,23 @@ const getContinuousBandAnnotations = ({ annotations }) => {
  * @returns {import('./annotation').PositionedBandAnnotation[]}
  */
 const getQualitativeBandAnnotations = ({ annotations, categories }) => {
+
+  const normalizedCategoryCodes = (() => {
+    return R.pluck('code', categories).map(R.toLower)
+  })();
+  
   return annotations
     .map((annotation) => {
       let from = -1;
       let to = -1;
       from = R.findIndex(
-        R.compose(R.equals(annotation.fromCategoryCode), R.prop('code')),
-        categories,
+        R.equals(annotation.fromCategoryCode),
+        normalizedCategoryCodes,
       );
       if (from === -1) return;
       to = R.findIndex(
-        R.compose(R.equals(annotation.toCategoryCode), R.prop('code')),
-        categories,
+        R.equals(annotation.toCategoryCode),
+        normalizedCategoryCodes
       );
       if (to === -1) return;
       // Start/end one half before/after the categories so they are enclosed with padding

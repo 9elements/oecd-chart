@@ -1,6 +1,5 @@
 // @ts-check
 import * as R from 'ramda';
-import { mapWithIndex } from '../../utils/ramdaUtil';
 import { frequencies } from '../dateUtil';
 
 /** @type {[undefined, undefined]} */
@@ -31,7 +30,7 @@ const getTimeRange = (categories, categoriesFrequency) => {
  * series: { code: string }[];
  * categories: { code: string }[];
  * areCategoriesDates: boolean;
- * categoriesDateFormat: keyof import('../../constants/chart').frequencyTypes
+ * categoriesDateFormat: keyof typeof import('../../constants/chart').frequencyTypes
  * }} data
  * @param {import('./annotation').Annotation[]} annotations
  * @returns {import('./annotation').Annotation[]}
@@ -55,7 +54,7 @@ export const filterAndSortAnnotations = (data, annotations) => {
 
   /** @type {Map<string, number>} */
   const categoryCodeToIndex = new Map(
-    mapWithIndex(({ code }, index) => [code, index], data.categories),
+    data.categories.map(({ code }, index) => [code.toLowerCase(), index])
   );
 
   return R.compose(
@@ -90,7 +89,7 @@ export const filterAndSortAnnotations = (data, annotations) => {
         const toTimestamp = categoriesFrequency.tryParse(toCategoryCode);
         if (!(fromTimestamp && toTimestamp)) return false;
         const inTimeRange =
-          minTimestamp <= fromTimestamp && toTimestamp <= maxTimestamp;
+          minTimestamp <= fromTimestamp.getTime() && toTimestamp.getTime() <= maxTimestamp;
         return inTimeRange;
       }
       // Band annotation, categories are strings: from and to need to appear in the data explicitly

@@ -53,7 +53,7 @@ export const createPositionedPointAnnotations = ({
   
   /** @type {{category: string; value: number | null}[][]} */
   const listOfSeriesWithCategories = R.map(
-    (series) => R.zipWith((category, point) => { return { category: category.code, value: point.value, } }, data.categories, series),
+    (series) => R.zipWith((category, point) => { return { category: category.code.toLowerCase(), value: point.value, } }, data.categories, series),
     listOfSeries
   );
 
@@ -62,14 +62,14 @@ export const createPositionedPointAnnotations = ({
   const positionedAnnotations = annotations
     .map((annotation) => {
       const categoryIndex = data.categories.findIndex(
-        (category) => category.code === annotation.categoryCode,
+        (category) => category.code.toLowerCase() === annotation.categoryCode,
       );
       if (categoryIndex === -1) {
         return
       };
 
       const seriesForAnnotation = data.series.find(
-        (series) => series.code == annotation.seriesCode,
+        (series) => series.code.toLowerCase() == annotation.seriesCode,
       );
       if (!seriesForAnnotation) return;
 

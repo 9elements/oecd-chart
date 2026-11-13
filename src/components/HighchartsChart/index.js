@@ -36,6 +36,7 @@ import { createAnnotationFooter } from '../../utils/chartOptions/createAnnotatio
 import { deepMergeUserOptionsWithDefaultOptions } from '../../utils/chartOptions/deepMergeUserOptionsWithDefaultOptions';
 import { exampleAnnotations } from '../../utils/chartOptions/exampleAnnotations';
 import { filterAndSortAnnotations } from '../../utils/chartOptions/filterAndSortAnnotations';
+import { normalizeAnnotationCodes } from '../../utils/chartOptions/normalizeAnnotationCodes';
 import { getCreateOptionsFuncForChartType } from '../../utils/chartOptions/getCreateOptionsFuncForChartType';
 import {
   createFooter,
@@ -187,9 +188,15 @@ const HighchartsChart = ({
   calcAvgValue = null,
   referenceValueCode = null,
   dataLastUpdateDate = null,
-  // TODO: for testing only
-  annotations = exampleAnnotations,
+  annotations,
 }) => {
+  // TESTING
+  const usedAnnotations = useMemo(() => {
+    return (!annotations || annotations.length === 0)
+      ? exampleAnnotations
+      : annotations;
+  }, [annotations]);
+
   const ChartForType = getChartForType(chartType);
 
   const chartRef = useRef(null);
@@ -938,10 +945,15 @@ const HighchartsChart = ({
     setAllHeightCalculationsHaveBeenDone,
   ] = useState(false);
 
+  const annotationsWithCodes = useMemo(
+    () => normalizeAnnotationCodes(usedAnnotations, parsedData),
+    [parsedData, usedAnnotations]
+  );
+
   // Filter annotations for those categories actually in the data
   const sortedApplicableAnnotations = useMemo(
-    () => filterAndSortAnnotations(parsedData, annotations),
-    [parsedData, annotations],
+    () => filterAndSortAnnotations(parsedData, annotationsWithCodes),
+    [parsedData, annotationsWithCodes],
   );
 
   const annotationsForFooter = useMemo(() => {
